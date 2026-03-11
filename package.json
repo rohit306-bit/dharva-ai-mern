@@ -1,0 +1,17 @@
+{
+  "name": "dharva-ai-system",
+  "version": "1.0.0",
+  "description": "Dharva AI System — Full MERN Stack Website",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm start\"",
+    "start": "cd backend && npm start",
+    "build": "cd frontend && npm run build",
+    "seed": "cd backend && npm run seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "author": "Dharva AI System",
+  "license": "MIT"
+}
