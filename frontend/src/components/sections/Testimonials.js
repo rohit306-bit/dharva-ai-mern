@@ -1,128 +1,99 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 const TESTIMONIALS = [
   {
-    quote: "DHARVA gave us the audit trail we needed to pass our EU AI Act assessment in 6 weeks. What would have taken a team of lawyers months was automated by the compliance generator.",
+    quote: "DHARVA gave us the audit trail we needed to pass our EU AI Act assessment in 6 weeks. What would have taken a team of lawyers months was automated.",
     name: 'Dr. Sarah Chen',
     title: 'Chief AI Officer',
     company: 'NexaBank Group',
-    industry: 'Banking',
     avatar: 'SC',
     color: '#00e5c8',
-    metric: { label: 'Time to Compliance', value: '6 weeks' },
+    metric: '6 weeks to compliance',
   },
   {
-    quote: "We deployed DHARVA across our clinical AI portfolio and discovered bias patterns in our triage system that we had no idea existed. The fairness metrics saved us from a serious regulatory violation.",
+    quote: "We discovered bias patterns in our triage system that we had no idea existed. The fairness metrics saved us from a serious regulatory violation.",
     name: 'James Okonkwo',
     title: 'VP of Digital Health',
     company: 'Meridian Health Systems',
-    industry: 'Healthcare',
     avatar: 'JO',
     color: '#4ade80',
-    metric: { label: 'Bias Issues Detected', value: '7 critical' },
+    metric: '7 critical issues detected',
   },
   {
-    quote: "The impact score engine is genuinely novel. For the first time we can quantify the downstream financial harm of our AI decisions and present that to our board and regulators with confidence.",
+    quote: "For the first time we can quantify the downstream financial harm of our AI decisions and present that to our board and regulators with confidence.",
     name: 'Priya Sharma',
     title: 'Head of Risk & Compliance',
     company: 'Axiom Insurance',
-    industry: 'Insurance',
     avatar: 'PS',
     color: '#818cf8',
-    metric: { label: 'Risk Exposure Reduced', value: '$12M' },
+    metric: '$12M risk exposure reduced',
   },
   {
-    quote: "Our HR team was mandated to assess our hiring AI under the new EU rules. DHARVA's algorithmic accountability report was the only tool that gave us what regulators actually asked for.",
+    quote: "DHARVA's algorithmic accountability report was the only tool that gave us exactly what regulators asked for. Saved us €2.4M in potential fines.",
     name: 'Marcus Weber',
     title: 'Chief People Officer',
     company: 'TechForce GmbH',
-    industry: 'Technology',
     avatar: 'MW',
     color: '#facc15',
-    metric: { label: 'Regulatory Fines Avoided', value: '€2.4M' },
+    metric: '€2.4M fines avoided',
+  },
+  {
+    quote: "Deploying DHARVA across our lending portfolio reduced adverse action complaints by 41% and made our quarterly regulatory reviews straightforward.",
+    name: 'Aisha Nwosu',
+    title: 'Director of AI Governance',
+    company: 'Atlas Capital',
+    avatar: 'AN',
+    color: '#f59e0b',
+    metric: '41% fewer complaints',
   },
 ];
 
+const Card = ({ t }) => (
+  <div className="testi-card">
+    <p className="testi-quote">"{t.quote}"</p>
+    <div className="testi-footer">
+      <div className="testi-avatar" style={{ background: t.color + '22', color: t.color }}>{t.avatar}</div>
+      <div className="testi-info">
+        <span className="testi-name">{t.name}</span>
+        <span className="testi-role">{t.title}, {t.company}</span>
+      </div>
+      <span className="testi-metric" style={{ color: t.color }}>{t.metric}</span>
+    </div>
+  </div>
+);
+
 export default function Testimonials() {
-  const [active, setActive] = useState(0);
-  const current = TESTIMONIALS[active];
+  const doubled = [...TESTIMONIALS, ...TESTIMONIALS];
 
   return (
-    <section className="testimonials-section" id="testimonials">
-      <div className="testimonials-inner">
-        <div className="section-eyebrow">Customer Stories</div>
-        <h2 className="section-title">
-          Trusted by AI-forward enterprises
-        </h2>
-        <p className="section-subtitle">
-          From global banks to healthcare systems — leading organizations use DHARVA to govern AI with confidence.
-        </p>
-
-        {/* Main Testimonial */}
-        <div className="testimonial-feature">
-          <div className="testimonial-quote-mark" style={{ color: current.color }}>"</div>
-          <blockquote className="testimonial-quote">
-            {current.quote}
-          </blockquote>
-          <div className="testimonial-author">
-            <div className="testimonial-avatar" style={{ background: current.color + '22', color: current.color }}>
-              {current.avatar}
-            </div>
-            <div className="testimonial-author-info">
-              <span className="testimonial-name">{current.name}</span>
-              <span className="testimonial-title">{current.title}, {current.company}</span>
-            </div>
-            <div className="testimonial-metric">
-              <span className="testimonial-metric-val" style={{ color: current.color }}>{current.metric.value}</span>
-              <span className="testimonial-metric-label">{current.metric.label}</span>
-            </div>
-          </div>
+    <section className="testi-section" id="testimonials">
+      <div className="container">
+        <div className="testi-header">
+          <div className="section-label">Customer Stories</div>
+          <div className="section-title">Trusted by AI-forward enterprises</div>
+          <p className="section-desc">
+            From global banks to healthcare systems — leading organizations use DHARVA
+            to govern AI with confidence.
+          </p>
         </div>
+      </div>
 
-        {/* Selector Dots */}
-        <div className="testimonial-dots">
-          {TESTIMONIALS.map((_, i) => (
-            <button
-              key={i}
-              className={`testimonial-dot ${i === active ? 'testimonial-dot--active' : ''}`}
-              style={{ background: i === active ? current.color : undefined }}
-              onClick={() => setActive(i)}
-            />
+      <div className="testi-stage">
+        <div className="testi-fade testi-fade--left" />
+        <div className="testi-track">
+          {doubled.map((t, i) => (
+            <Card key={i} t={t} />
           ))}
         </div>
+        <div className="testi-fade testi-fade--right" />
+      </div>
 
-        {/* Testimonial Cards Row */}
-        <div className="testimonial-cards">
-          {TESTIMONIALS.map((t, i) => (
-            <button
-              key={i}
-              className={`testimonial-card ${i === active ? 'testimonial-card--active' : ''}`}
-              style={{ '--t-color': t.color }}
-              onClick={() => setActive(i)}
-            >
-              <div className="testimonial-card-top">
-                <div className="testimonial-card-avatar" style={{ background: t.color + '22', color: t.color }}>
-                  {t.avatar}
-                </div>
-                <div>
-                  <div className="testimonial-card-name">{t.name}</div>
-                  <div className="testimonial-card-company">{t.company}</div>
-                </div>
-              </div>
-              <div className="testimonial-card-metric" style={{ color: t.color }}>{t.metric.value}</div>
-              <div className="testimonial-card-metric-label">{t.metric.label}</div>
-            </button>
+      <div className="container">
+        <div className="testi-logos">
+          <span className="testi-logos-label">Trusted by teams at</span>
+          {['NexaBank Group', 'Meridian Health', 'Axiom Insurance', 'TechForce GmbH', 'Atlas Capital', 'Sentinel Gov'].map((n) => (
+            <div key={n} className="testi-logo-chip">{n}</div>
           ))}
-        </div>
-
-        {/* Logos Row */}
-        <div className="testimonial-logos">
-          <span className="testimonial-logos-label">Trusted by teams at</span>
-          <div className="testimonial-logos-row">
-            {['NexaBank Group', 'Meridian Health', 'Axiom Insurance', 'TechForce GmbH', 'Atlas Capital', 'Sentinel Gov'].map((name) => (
-              <div key={name} className="testimonial-logo-badge">{name}</div>
-            ))}
-          </div>
         </div>
       </div>
     </section>

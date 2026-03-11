@@ -1,105 +1,126 @@
 import React from 'react';
+import { useReveal } from '../../hooks';
 
 const STATS = [
-  { value: '$5.2T', label: 'in AI-driven decisions annually', sub: 'across lending, hiring & insurance' },
-  { value: '73%', label: 'of enterprises lack AI audit infrastructure', sub: 'McKinsey Global AI Survey 2024' },
-  { value: '840+', label: 'AI regulatory violations filed', sub: 'in the EU since 2023' },
-  { value: '$48M', label: 'average cost of an AI compliance failure', sub: 'including legal & reputational damage' },
+  { value: '$5.2T',  label: 'in AI-driven decisions annually',              sub: 'across lending, hiring & insurance' },
+  { value: '73%',   label: 'enterprises lack AI audit infrastructure',     sub: 'McKinsey Global AI Survey 2024' },
+  { value: '840+',  label: 'AI regulatory violations filed',                sub: 'in the EU since 2023' },
+  { value: '$48M',  label: 'average cost of an AI compliance failure',      sub: 'including legal & reputational damage' },
 ];
 
-const RISKS = [
-  {
-    icon: '⚠',
-    color: '#f87171',
-    title: 'Compliance Risk',
-    desc: 'EU AI Act, ISO 42001, and algorithmic accountability laws demand documented evidence of AI oversight — most enterprises have none.',
-  },
-  {
-    icon: '⚖',
-    color: '#fb923c',
-    title: 'Legal Liability',
-    desc: 'Automated decisions in lending, hiring, and healthcare are subject to discrimination lawsuits and class-action risk.',
-  },
-  {
-    icon: '◈',
-    color: '#facc15',
-    title: 'Systemic Bias',
-    desc: 'Without real-time fairness monitoring, AI models silently amplify existing societal biases at unprecedented scale.',
-  },
-  {
-    icon: '🔒',
-    color: '#818cf8',
-    title: 'Regulatory Exposure',
-    desc: 'Regulators globally are moving from voluntary guidance to mandatory enforcement — unaudited AI is a boardroom-level risk.',
-  },
-];
+const GAP_HAS     = ['Model accuracy', 'Inference latency', 'API cost', 'Performance drift', 'Data pipeline health'];
+const GAP_MISSING = ['Harm to individuals', 'Systemic bias patterns', 'Financial impact per decision', 'Regulatory compliance posture', 'Societal consequence at scale'];
+
+const StatCard = ({ stat, index }) => {
+  const [ref, isVisible] = useReveal();
+  return (
+    <div
+      ref={ref}
+      className="prob-stat"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transition: `all .55s var(--ease) ${index * 0.1}s`,
+      }}
+    >
+      <div className="prob-stat-value">{stat.value}</div>
+      <div className="prob-stat-label">{stat.label}</div>
+      <div className="prob-stat-sub">{stat.sub}</div>
+    </div>
+  );
+};
 
 export default function Problem() {
+  const [headerRef, headerVisible] = useReveal();
+  const [gapRef, gapVisible] = useReveal();
+
   return (
-    <section className="problem-section" id="problem">
-      <div className="problem-inner">
-        <div className="section-eyebrow">The Problem</div>
-        <h2 className="section-title">
-          AI is making millions of decisions.<br />
-          <span className="text-accent">Nobody is measuring the consequences.</span>
-        </h2>
-        <p className="section-subtitle">
-          Modern AI observability tools track accuracy, latency, and cost — but completely ignore the societal and
-          financial impact of automated decisions on real people.
-        </p>
+    <section className="prob-section" id="problem">
+      <div className="container">
 
-        {/* Stats Row */}
-        <div className="problem-stats">
-          {STATS.map((s, i) => (
-            <div key={i} className="problem-stat">
-              <div className="problem-stat-value">{s.value}</div>
-              <div className="problem-stat-label">{s.label}</div>
-              <div className="problem-stat-sub">{s.sub}</div>
+        {/* Header */}
+        <div
+          ref={headerRef}
+          className="prob-header"
+          style={{
+            opacity: headerVisible ? 1 : 0,
+            transform: headerVisible ? 'translateY(0)' : 'translateY(24px)',
+            transition: 'all .6s var(--ease)',
+          }}
+        >
+          <div className="section-label">The Problem</div>
+          <h2 className="section-title" style={{ maxWidth: 700 }}>
+            AI is making millions of decisions.<br />
+            <span className="gradient-text">Nobody is measuring the consequences.</span>
+          </h2>
+          <p className="section-desc">
+            Modern AI observability tools track accuracy, latency, and cost — but completely
+            ignore the societal and financial impact of automated decisions on real people.
+          </p>
+        </div>
+
+        {/* Stats grid */}
+        <div className="prob-stats">
+          {STATS.map((s, i) => <StatCard key={i} stat={s} index={i} />)}
+        </div>
+
+        {/* Gap comparison */}
+        <div
+          ref={gapRef}
+          className="prob-gap"
+          style={{
+            opacity: gapVisible ? 1 : 0,
+            transform: gapVisible ? 'translateY(0)' : 'translateY(24px)',
+            transition: 'all .7s var(--ease)',
+          }}
+        >
+          <div className="prob-gap-col">
+            <div className="prob-gap-col-label prob-gap-col-label--has">What AI Tools Measure Today</div>
+            <ul className="prob-gap-list">
+              {GAP_HAS.map((item, i) => (
+                <li key={i} className="prob-gap-item prob-gap-item--has">
+                  <span className="prob-gap-icon">✓</span>{item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="prob-gap-divider">
+            <div className="prob-gap-missing-badge">
+              <span>MISSING</span>
+              <strong>IMPACT</strong>
+            </div>
+            <div className="prob-gap-arrow">→</div>
+          </div>
+
+          <div className="prob-gap-col">
+            <div className="prob-gap-col-label prob-gap-col-label--missing">What Nobody Measures</div>
+            <ul className="prob-gap-list">
+              {GAP_MISSING.map((item, i) => (
+                <li key={i} className="prob-gap-item prob-gap-item--missing">
+                  <span className="prob-gap-icon">✗</span>{item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Risk strip */}
+        <div className="prob-risks">
+          {[
+            { icon: '⚠', color: '#f87171', title: 'Compliance Risk',      desc: 'EU AI Act, ISO 42001, and accountability laws demand documented evidence of AI oversight.' },
+            { icon: '⚖', color: '#fb923c', title: 'Legal Liability',      desc: 'Automated decisions in lending, hiring, and healthcare face discrimination lawsuits.' },
+            { icon: '◈', color: '#facc15', title: 'Systemic Bias',         desc: 'Without real-time fairness monitoring, AI amplifies societal biases at unprecedented scale.' },
+            { icon: '🔒', color: '#818cf8', title: 'Regulatory Exposure', desc: 'Regulators are moving from voluntary guidance to mandatory enforcement globally.' },
+          ].map((r, i) => (
+            <div key={i} className="prob-risk" style={{ '--r': r.color }}>
+              <span className="prob-risk-icon" style={{ color: r.color }}>{r.icon}</span>
+              <strong className="prob-risk-title">{r.title}</strong>
+              <p className="prob-risk-desc">{r.desc}</p>
             </div>
           ))}
         </div>
 
-        {/* Risk Cards */}
-        <div className="problem-risks">
-          {RISKS.map((r, i) => (
-            <div key={i} className="problem-risk-card" style={{ '--risk-color': r.color }}>
-              <div className="problem-risk-icon" style={{ color: r.color }}>{r.icon}</div>
-              <h3 className="problem-risk-title">{r.title}</h3>
-              <p className="problem-risk-desc">{r.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Gap Visual */}
-        <div className="problem-gap">
-          <div className="problem-gap-col problem-gap-col--left">
-            <h4>Current AI Tools Measure</h4>
-            <ul className="problem-gap-list problem-gap-list--has">
-              <li>✓ Model accuracy</li>
-              <li>✓ Inference latency</li>
-              <li>✓ API cost</li>
-              <li>✓ Performance drift</li>
-              <li>✓ Data pipeline health</li>
-            </ul>
-          </div>
-          <div className="problem-gap-divider">
-            <div className="problem-gap-arrow">→</div>
-            <div className="problem-gap-missing">
-              <span>Missing</span>
-              <span className="problem-gap-missing-val">IMPACT</span>
-            </div>
-          </div>
-          <div className="problem-gap-col problem-gap-col--right">
-            <h4>But Nobody Measures</h4>
-            <ul className="problem-gap-list problem-gap-list--missing">
-              <li>✗ Harm to individuals</li>
-              <li>✗ Systemic bias patterns</li>
-              <li>✗ Financial impact per decision</li>
-              <li>✗ Regulatory compliance posture</li>
-              <li>✗ Societal consequence at scale</li>
-            </ul>
-          </div>
-        </div>
       </div>
     </section>
   );

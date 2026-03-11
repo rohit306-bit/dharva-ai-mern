@@ -13,12 +13,11 @@ import Footer from './components/layout/Footer';
 import Hero from './components/sections/Hero';
 import { Marquee, Products, Features } from './components/sections/ProductsAndFeatures';
 import Launches from './components/sections/Launches';
-import { Docs, APIShowcase, Stats, Integrations, Pricing, CTA } from './components/sections/Sections';
+import { APIShowcase, Pricing, CTA } from './components/sections/Sections';
 
 // Sections — new
 import Problem from './components/sections/Problem';
 import UseCases from './components/sections/UseCases';
-import SecuritySection from './components/sections/SecuritySection';
 import Testimonials from './components/sections/Testimonials';
 
 // UI
@@ -54,11 +53,7 @@ function LandingPage({ onOpenContact }) {
       <UseCases />
       <Launches launches={state.launches} />
       <div className="glow-line" />
-      <Docs docs={state.docs} />
       <APIShowcase />
-      <Stats />
-      <SecuritySection />
-      <Integrations />
       <Pricing pricing={state.pricing} onOpenContact={onOpenContact} />
       <Testimonials />
       <div className="glow-line" />
