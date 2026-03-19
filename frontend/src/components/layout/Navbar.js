@@ -1,24 +1,39 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import DharvaLogo from '../ui/DharvaLogo';
 import { useAuth } from '../../context/AuthContext';
 
 const NAV_LINKS = [
-  { label: 'Platform',    id: 'products'      },
-  { label: 'How It Works', id: 'features'     },
-  { label: 'Use Cases',   id: 'use-cases'     },
-  { label: 'Pricing',     id: 'pricing'       },
-  { label: 'Roadmap',     id: 'launches'      },
+  { label: 'Platform',    id: 'products',   href: null },
+  { label: 'How It Works', id: 'demo',      href: null },
+  { label: 'Use Cases',   id: 'use-cases',  href: null },
+  { label: 'Pricing',     id: 'pricing',    href: null },
+];
+
+const PAGE_LINKS = [
+  { label: 'Product',  href: '/product' },
+  { label: 'Docs',     href: '/docs' },
+  { label: 'Blog',     href: '/blog' },
+];
+
+const VERTICALS = [
+  { label: '🏦 Fintech & Banking',     href: '/verticals/fintech' },
+  { label: '🏥 Healthtech & Clinical', href: '/verticals/healthtech' },
+  { label: '🏢 Enterprise SaaS',       href: '/verticals/enterprise' },
 ];
 
 const Navbar = ({ onOpenContact }) => {
   const [isMobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled]       = useState(false);
   const [activeId, setActiveId]       = useState('');
+  const [verticalsOpen, setVerticalsOpen] = useState(false);
+  const verticalsRef = useRef(null);
+  const location = useLocation();
+  const isHome = location.pathname === '/';
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Scroll shadow + progress bar
+  // Scroll shadow + progress bar (home only)
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 60);
@@ -32,11 +47,11 @@ const Navbar = ({ onOpenContact }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Active section via IntersectionObserver
+  // Active section via IntersectionObserver (home only)
   useEffect(() => {
+    if (!isHome) return;
     const ids = NAV_LINKS.map((l) => l.id);
     const observers = [];
-
     ids.forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -47,15 +62,33 @@ const Navbar = ({ onOpenContact }) => {
       obs.observe(el);
       observers.push(obs);
     });
-
     return () => observers.forEach((o) => o.disconnect());
+  }, [isHome]);
+
+  // Close verticals dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (verticalsRef.current && !verticalsRef.current.contains(e.target)) {
+        setVerticalsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
   const scrollTo = useCallback((id) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!isHome) {
+      navigate('/');
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    } else {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
     setMobileOpen(false);
-  }, []);
+  }, [isHome, navigate]);
 
   const handleLogout = () => { logout(); navigate('/'); };
   const userInitial = user?.name ? user.name[0].toUpperCase() : 'U';
@@ -63,8 +96,7 @@ const Navbar = ({ onOpenContact }) => {
   return (
     <>
       {/* ── Main Nav ── */}
-      <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
-        {/* Scroll progress bar */}
+      <nav className={`navbar ${scrolled || !isHome ? 'navbar--scrolled' : ''}`}>
         <div className="nav-progress" id="nav-progress" />
 
         <div className="navbar-inner">
@@ -78,6 +110,7 @@ const Navbar = ({ onOpenContact }) => {
 
           {/* Desktop links */}
           <nav className="nav-links" aria-label="Main navigation">
+            {/* Home anchor links */}
             {NAV_LINKS.map((link) => (
               <a
                 key={link.id}
@@ -87,6 +120,48 @@ const Navbar = ({ onOpenContact }) => {
               >
                 {link.label}
               </a>
+            ))}
+
+            {/* Verticals dropdown */}
+            <div className="nav-dropdown" ref={verticalsRef}>
+              <button
+                className={`nav-link nav-dropdown-trigger ${verticalsOpen ? 'nav-link--active' : ''}`}
+                onClick={() => setVerticalsOpen((v) => !v)}
+              >
+                Verticals
+                <svg
+                  width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  style={{ transition: 'transform .2s', transform: verticalsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                >
+                  <path d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {verticalsOpen && (
+                <div className="nav-dropdown-menu">
+                  {VERTICALS.map((v) => (
+                    <Link
+                      key={v.href}
+                      to={v.href}
+                      className="nav-dropdown-item"
+                      onClick={() => setVerticalsOpen(false)}
+                    >
+                      {v.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Page links */}
+            {PAGE_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={`nav-link ${location.pathname === link.href ? 'nav-link--active' : ''}`}
+              >
+                {link.label}
+              </Link>
             ))}
           </nav>
 
@@ -110,7 +185,7 @@ const Navbar = ({ onOpenContact }) => {
               <>
                 <Link to="/login" className="btn btn-ghost nav-btn-sm">Sign In</Link>
                 <button className="btn btn-primary nav-btn-sm" onClick={onOpenContact}>
-                  Request Demo
+                  Connect in 5 min
                 </button>
               </>
             )}
@@ -150,7 +225,7 @@ const Navbar = ({ onOpenContact }) => {
               <a
                 key={link.id}
                 href={`#${link.id}`}
-                className={`mobile-link ${activeId === link.id ? 'mobile-link--active' : ''}`}
+                className="mobile-link"
                 style={{ animationDelay: `${i * 0.07}s` }}
                 onClick={(e) => { e.preventDefault(); scrollTo(link.id); }}
               >
@@ -159,6 +234,36 @@ const Navbar = ({ onOpenContact }) => {
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </a>
+            ))}
+            <div className="mobile-divider" />
+            {VERTICALS.map((v, i) => (
+              <Link
+                key={v.href}
+                to={v.href}
+                className="mobile-link"
+                style={{ animationDelay: `${(NAV_LINKS.length + i) * 0.07}s` }}
+                onClick={() => setMobileOpen(false)}
+              >
+                <span>{v.label}</span>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </Link>
+            ))}
+            <div className="mobile-divider" />
+            {PAGE_LINKS.map((link, i) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className="mobile-link"
+                style={{ animationDelay: `${(NAV_LINKS.length + VERTICALS.length + i) * 0.07}s` }}
+                onClick={() => setMobileOpen(false)}
+              >
+                <span>{link.label}</span>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </Link>
             ))}
           </nav>
 
@@ -171,7 +276,7 @@ const Navbar = ({ onOpenContact }) => {
             ) : (
               <>
                 <Link to="/login" className="btn btn-ghost" onClick={() => setMobileOpen(false)} style={{ width: '100%', justifyContent: 'center' }}>Sign In</Link>
-                <button className="btn btn-primary" onClick={() => { setMobileOpen(false); onOpenContact(); }} style={{ width: '100%', justifyContent: 'center' }}>Request Demo</button>
+                <button className="btn btn-primary" onClick={() => { setMobileOpen(false); onOpenContact?.(); }} style={{ width: '100%', justifyContent: 'center' }}>Connect in 5 minutes</button>
               </>
             )}
           </div>
