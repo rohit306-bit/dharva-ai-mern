@@ -1,38 +1,92 @@
-import React from 'react';
 import { useReveal } from '../../hooks';
 
-const STATS = [
-  { value: '$5.2T',  label: 'in AI-driven decisions annually',              sub: 'across lending, hiring & insurance' },
-  { value: '73%',   label: 'enterprises lack AI audit infrastructure',     sub: 'McKinsey Global AI Survey 2024' },
-  { value: '840+',  label: 'AI regulatory violations filed',                sub: 'in the EU since 2023' },
-  { value: '$48M',  label: 'average cost of an AI compliance failure',      sub: 'including legal & reputational damage' },
+const RISK_CATEGORIES = [
+  {
+    icon: '🧠',
+    color: '#f43f5e',
+    title: 'Hallucination',
+    tag: 'HIGH RISK',
+    tagColor: '#f43f5e',
+    desc: 'Your LLM confidently outputs false facts, fabricated citations, or made-up data. It happens silently, at scale. In finance or healthcare, this is a liability.',
+    stat: '23%',
+    statLabel: 'of LLM responses contain factual errors',
+  },
+  {
+    icon: '⚖',
+    color: '#fb923c',
+    title: 'Bias & Discrimination',
+    tag: 'REGULATORY',
+    tagColor: '#fb923c',
+    desc: 'Your AI treats demographic groups differently. Whether in hiring, lending, or triage — discriminatory patterns trigger lawsuits and regulator scrutiny.',
+    stat: '67%',
+    statLabel: 'of enterprises have never run a bias audit',
+  },
+  {
+    icon: '📉',
+    color: '#facc15',
+    title: 'Model Drift',
+    tag: 'SILENT KILLER',
+    tagColor: '#facc15',
+    desc: 'The world changes. Your model doesn\'t. Over time, accuracy degrades — but without monitoring, you won\'t notice until decisions are already wrong.',
+    stat: '4.2x',
+    statLabel: 'performance drop in models after 6 months',
+  },
+  {
+    icon: '🚨',
+    color: '#8b5cf6',
+    title: 'Unsafe Output',
+    tag: 'BRAND RISK',
+    tagColor: '#8b5cf6',
+    desc: 'Harmful, toxic, or off-policy AI responses reaching end users. One incident goes viral. Your brand takes years to recover.',
+    stat: '1 in 50',
+    statLabel: 'AI interactions produces a harmful output',
+  },
+  {
+    icon: '🔒',
+    color: '#3b82f6',
+    title: 'Compliance Failure',
+    tag: 'EXISTENTIAL',
+    tagColor: '#3b82f6',
+    desc: 'EU AI Act. RBI AI guidelines. CDSCO regulations. If you can\'t produce an audit trail on demand, you\'re already non-compliant — and the fines are getting larger.',
+    stat: '$48M',
+    statLabel: 'average cost of an AI compliance failure',
+  },
 ];
 
-const GAP_HAS     = ['Model accuracy', 'Inference latency', 'API cost', 'Performance drift', 'Data pipeline health'];
-const GAP_MISSING = ['Harm to individuals', 'Systemic bias patterns', 'Financial impact per decision', 'Regulatory compliance posture', 'Societal consequence at scale'];
-
-const StatCard = ({ stat, index }) => {
+const RiskCard = ({ risk, index }) => {
   const [ref, isVisible] = useReveal();
   return (
     <div
       ref={ref}
-      className="prob-stat"
+      className="risk-card"
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-        transition: `all .55s var(--ease) ${index * 0.1}s`,
+        transform: isVisible ? 'translateY(0)' : 'translateY(28px)',
+        transition: `all .55s var(--ease) ${index * 0.08}s`,
+        '--risk-color': risk.color,
       }}
     >
-      <div className="prob-stat-value">{stat.value}</div>
-      <div className="prob-stat-label">{stat.label}</div>
-      <div className="prob-stat-sub">{stat.sub}</div>
+      <div className="risk-card-top">
+        <div className="risk-card-icon" style={{ background: risk.color + '18', color: risk.color }}>
+          {risk.icon}
+        </div>
+        <span className="risk-tag" style={{ color: risk.tagColor, background: risk.tagColor + '18' }}>
+          {risk.tag}
+        </span>
+      </div>
+      <h4 className="risk-card-title">{risk.title}</h4>
+      <p className="risk-card-desc">{risk.desc}</p>
+      <div className="risk-card-stat">
+        <strong style={{ color: risk.color }}>{risk.stat}</strong>
+        <span>{risk.statLabel}</span>
+      </div>
     </div>
   );
 };
 
 export default function Problem() {
   const [headerRef, headerVisible] = useReveal();
-  const [gapRef, gapVisible] = useReveal();
+  const [urgencyRef, urgencyVisible] = useReveal();
 
   return (
     <section className="prob-section" id="problem">
@@ -48,36 +102,57 @@ export default function Problem() {
             transition: 'all .6s var(--ease)',
           }}
         >
-          <div className="section-label">The Problem</div>
-          <h2 className="section-title" style={{ maxWidth: 700 }}>
-            AI is making millions of decisions.<br />
-            <span className="gradient-text">Nobody is measuring the consequences.</span>
+          <div className="section-label">The Reality</div>
+          <h2 className="section-title" style={{ maxWidth: 760 }}>
+            Five AI risks silently destroying<br />
+            <span className="gradient-text">enterprise trust, compliance, and revenue.</span>
           </h2>
           <p className="section-desc">
-            Modern AI observability tools track accuracy, latency, and cost — but completely
-            ignore the societal and financial impact of automated decisions on real people.
+            Your AI monitoring dashboards show latency, uptime, and cost. None of them tell you
+            if your AI is hallucinating, discriminating, drifting, or about to trigger a regulatory
+            audit. That's the blind spot Dharva was built to close.
           </p>
         </div>
 
-        {/* Stats grid */}
-        <div className="prob-stats">
-          {STATS.map((s, i) => <StatCard key={i} stat={s} index={i} />)}
+        {/* Risk categories grid */}
+        <div className="risk-grid">
+          {RISK_CATEGORIES.map((risk, i) => (
+            <RiskCard key={i} risk={risk} index={i} />
+          ))}
         </div>
 
-        {/* Gap comparison */}
+        {/* Urgency banner */}
         <div
-          ref={gapRef}
-          className="prob-gap"
+          ref={urgencyRef}
+          className="prob-urgency"
           style={{
-            opacity: gapVisible ? 1 : 0,
-            transform: gapVisible ? 'translateY(0)' : 'translateY(24px)',
-            transition: 'all .7s var(--ease)',
+            opacity: urgencyVisible ? 1 : 0,
+            transform: urgencyVisible ? 'translateY(0)' : 'translateY(24px)',
+            transition: 'all .7s var(--ease) .2s',
           }}
         >
+          <div className="prob-urgency-inner">
+            <div className="prob-urgency-left">
+              <div className="prob-urgency-icon">⚡</div>
+              <div>
+                <strong>The EU AI Act enforcement began in August 2024.</strong>
+                <p>RBI issued AI governance directives in 2023. CDSCO is formalizing AI medical device oversight.
+                Companies that deploy AI without governance infrastructure are already in violation.</p>
+              </div>
+            </div>
+            <div className="prob-urgency-right">
+              <div className="prob-urgency-stat">€35M</div>
+              <div className="prob-urgency-stat-label">max EU AI Act fine per violation</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Gap: What you have vs what you need */}
+        <div className="prob-gap" style={{ marginTop: '4rem' }}>
           <div className="prob-gap-col">
-            <div className="prob-gap-col-label prob-gap-col-label--has">What AI Tools Measure Today</div>
+            <div className="prob-gap-col-label prob-gap-col-label--has">What your current tools give you</div>
             <ul className="prob-gap-list">
-              {GAP_HAS.map((item, i) => (
+              {['Model accuracy metrics', 'Inference latency', 'API uptime', 'Cost per token', 'Error rates'].map((item, i) => (
                 <li key={i} className="prob-gap-item prob-gap-item--has">
                   <span className="prob-gap-icon">✓</span>{item}
                 </li>
@@ -87,38 +162,22 @@ export default function Problem() {
 
           <div className="prob-gap-divider">
             <div className="prob-gap-missing-badge">
-              <span>MISSING</span>
-              <strong>IMPACT</strong>
+              <span>BLIND</span>
+              <strong>SPOT</strong>
             </div>
             <div className="prob-gap-arrow">→</div>
           </div>
 
           <div className="prob-gap-col">
-            <div className="prob-gap-col-label prob-gap-col-label--missing">What Nobody Measures</div>
+            <div className="prob-gap-col-label prob-gap-col-label--missing">What regulators will demand</div>
             <ul className="prob-gap-list">
-              {GAP_MISSING.map((item, i) => (
+              {['Decision-level audit trails', 'Bias & fairness documentation', 'Hallucination rate logs', 'Drift detection evidence', 'Compliance certification'].map((item, i) => (
                 <li key={i} className="prob-gap-item prob-gap-item--missing">
                   <span className="prob-gap-icon">✗</span>{item}
                 </li>
               ))}
             </ul>
           </div>
-        </div>
-
-        {/* Risk strip */}
-        <div className="prob-risks">
-          {[
-            { icon: '⚠', color: '#f87171', title: 'Compliance Risk',      desc: 'EU AI Act, ISO 42001, and accountability laws demand documented evidence of AI oversight.' },
-            { icon: '⚖', color: '#fb923c', title: 'Legal Liability',      desc: 'Automated decisions in lending, hiring, and healthcare face discrimination lawsuits.' },
-            { icon: '◈', color: '#facc15', title: 'Systemic Bias',         desc: 'Without real-time fairness monitoring, AI amplifies societal biases at unprecedented scale.' },
-            { icon: '🔒', color: '#818cf8', title: 'Regulatory Exposure', desc: 'Regulators are moving from voluntary guidance to mandatory enforcement globally.' },
-          ].map((r, i) => (
-            <div key={i} className="prob-risk" style={{ '--r': r.color }}>
-              <span className="prob-risk-icon" style={{ color: r.color }}>{r.icon}</span>
-              <strong className="prob-risk-title">{r.title}</strong>
-              <p className="prob-risk-desc">{r.desc}</p>
-            </div>
-          ))}
         </div>
 
       </div>

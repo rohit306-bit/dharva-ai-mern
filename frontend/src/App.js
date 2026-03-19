@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AppProvider, useAppContext } from './context/AppContext';
@@ -9,14 +9,13 @@ import './styles/global.css';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 
-// Sections — existing
+// Sections
 import Hero from './components/sections/Hero';
 import { Marquee, Products, Features } from './components/sections/ProductsAndFeatures';
 import Launches from './components/sections/Launches';
 import { APIShowcase, Pricing, CTA } from './components/sections/Sections';
-
-// Sections — new
 import Problem from './components/sections/Problem';
+import DemoSection from './components/sections/DemoSection';
 import UseCases from './components/sections/UseCases';
 import Testimonials from './components/sections/Testimonials';
 
@@ -27,6 +26,12 @@ import ContactModal from './components/ui/ContactModal';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
+import ProductPage from './pages/ProductPage';
+import FinTechPage from './pages/FinTechPage';
+import HealthtechPage from './pages/HealthtechPage';
+import EnterprisePage from './pages/EnterprisePage';
+import DocsPage from './pages/DocsPage';
+import BlogPage from './pages/BlogPage';
 
 // ═══════════ LANDING PAGE ═══════════
 function LandingPage({ onOpenContact }) {
@@ -47,6 +52,7 @@ function LandingPage({ onOpenContact }) {
       <Hero onOpenContact={onOpenContact} />
       <Marquee />
       <Problem />
+      <DemoSection />
       <Products products={state.products} />
       <div className="glow-line" />
       <Features />
@@ -98,6 +104,12 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/dashboard/*" element={<DashboardPage />} />
+          <Route path="/product" element={<ProductPage />} />
+          <Route path="/verticals/fintech" element={<FinTechPage />} />
+          <Route path="/verticals/healthtech" element={<HealthtechPage />} />
+          <Route path="/verticals/enterprise" element={<EnterprisePage />} />
+          <Route path="/docs" element={<DocsPage />} />
+          <Route path="/blog" element={<BlogPage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
