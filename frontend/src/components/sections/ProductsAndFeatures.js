@@ -1,5 +1,5 @@
-import React from 'react';
 import { useReveal } from '../../hooks';
+import { useCardTilt } from '../../hooks/useCardTilt';
 
 // ═══════════ MARQUEE ═══════════
 export const Marquee = () => {
@@ -37,16 +37,27 @@ const fallbackProducts = [
 ];
 
 const BentoCard = ({ product, delay }) => {
-  const [ref, isVisible] = useReveal();
+  const [revealRef, isVisible] = useReveal();
+  const { ref: tiltRef, onMouseMove, onMouseLeave } = useCardTilt(10, 14);
+
+  const setRefs = (el) => {
+    revealRef.current = el;
+    tiltRef.current = el;
+  };
+
   const tag = statusMap[product.status] || statusMap['coming-soon'];
 
   return (
     <div
-      ref={ref}
+      ref={setRefs}
       className={`bento-card ${product.large ? 'bento-card--large' : ''}`}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : 'translateY(28px)',
+        transform: isVisible
+          ? 'perspective(900px) rotateY(0deg) rotateX(0deg) translateZ(0px) scale(1)'
+          : 'perspective(900px) rotateX(6deg) translateY(28px) translateZ(-15px)',
         transition: `opacity .6s ease ${delay}s, transform .6s var(--ease) ${delay}s`,
         '--accent-color': product.accent,
       }}

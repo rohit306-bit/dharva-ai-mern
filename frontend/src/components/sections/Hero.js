@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useScrollTo } from '../../hooks';
+import ThreeBackground from '../ui/ThreeBackground';
+import { useCardTilt } from '../../hooks/useCardTilt';
 
 const STATS = [
   { value: '73%', label: 'Enterprises have zero AI audit infrastructure', sub: 'McKinsey 2024' },
@@ -11,6 +13,22 @@ const STATS = [
 const TRUST_LOGOS = [
   'NexaBank Group', 'Meridian Health', 'Axiom Insurance', 'TechForce GmbH', 'Atlas Capital',
 ];
+
+/* ── 3D Stat Card ── */
+const StatCard3D = ({ stat }) => {
+  const { ref, onMouseMove, onMouseLeave } = useCardTilt(8, 12);
+  return (
+    <div
+      ref={ref}
+      className="hero-stat"
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+    >
+      <strong>{stat.value}</strong>
+      <span>{stat.label}</span>
+    </div>
+  );
+};
 
 // Animated risk score dashboard preview
 const DashboardPreview = () => {
@@ -102,6 +120,9 @@ const Hero = ({ onOpenContact }) => {
 
   return (
     <section className="hero">
+      {/* ── Three.js 3D WebGL Background ── */}
+      <ThreeBackground />
+
       {/* Ambient background */}
       <div className="hero-bg">
         <div className="orb orb-1" />
@@ -168,13 +189,10 @@ const Hero = ({ onOpenContact }) => {
             </div>
           </div>
 
-          {/* Stats strip */}
+          {/* Stats strip — each card is 3D tilt */}
           <div className="hero-stats hero-anim hero-anim--5" style={{ marginTop: '2rem' }}>
             {STATS.map((s, i) => (
-              <div key={i} className="hero-stat">
-                <strong>{s.value}</strong>
-                <span>{s.label}</span>
-              </div>
+              <StatCard3D key={i} stat={s} />
             ))}
           </div>
         </div>
