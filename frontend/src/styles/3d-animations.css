@@ -1,0 +1,545 @@
+/* ═══════════════════════════════════════════════════════════════
+   DHARVA AI — 3D Animation Layer
+   Adds depth, perspective, and volumetric life to every section.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 0. ROOT 3D TOKENS ─────────────────────────────────────── */
+:root {
+  --perspective:   1200px;
+  --tilt-speed:    0.65s;
+  --float-dur:     6s;
+  --orbit-dur:     20s;
+  --shine-opacity: 0;
+}
+
+/* ── 1. HERO SECTION — 3D SCENE SHELL ──────────────────────── */
+.hero {
+  perspective: var(--perspective);
+  transform-style: preserve-3d;
+  overflow: visible;
+}
+
+/* Orbs upgraded from flat gradients → CSS 3D spheres */
+.orb {
+  border-radius: 50%;
+  filter: blur(80px);
+  transform-style: preserve-3d;
+}
+.orb-1 {
+  animation: orbFloat3D 18s ease-in-out infinite, orbPulse 4s ease-in-out infinite alternate;
+}
+.orb-2 {
+  animation: orbFloat3D 22s ease-in-out infinite reverse, orbPulse 5s ease-in-out infinite alternate;
+}
+.orb-3 {
+  animation: orbFloat3D 15s ease-in-out infinite 3s, orbPulse 6s ease-in-out infinite alternate 1s;
+}
+
+@keyframes orbFloat3D {
+  0%   { transform: translate(0, 0) rotateX(0deg) rotateY(0deg); }
+  25%  { transform: translate(30px, -40px) rotateX(15deg) rotateY(10deg); }
+  50%  { transform: translate(-20px, 20px) rotateX(-10deg) rotateY(-15deg); }
+  75%  { transform: translate(15px, -25px) rotateX(8deg) rotateY(12deg); }
+  100% { transform: translate(0, 0) rotateX(0deg) rotateY(0deg); }
+}
+@keyframes orbPulse {
+  from { opacity: .5; filter: blur(80px); }
+  to   { opacity: .8; filter: blur(90px); }
+}
+
+/* Hero headline — subtle 3D depth extrusion */
+.hero-headline {
+  transform: perspective(800px) translateZ(10px);
+  text-shadow:
+    0 2px 4px rgba(0,0,0,.4),
+    0 0 60px rgba(0,229,200,.06);
+  transition: transform 0.4s var(--ease);
+}
+
+/* Badge — 3D floating pill */
+.hero-badge-wrap .badge {
+  transform: perspective(600px) translateZ(8px) rotateX(2deg);
+  box-shadow:
+    0 8px 32px rgba(0,229,200,.15),
+    0 2px 8px rgba(0,0,0,.4),
+    inset 0 1px 0 rgba(255,255,255,.08);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+.hero-badge-wrap:hover .badge {
+  transform: perspective(600px) translateZ(18px) rotateX(0deg);
+  box-shadow:
+    0 12px 40px rgba(0,229,200,.25),
+    0 4px 12px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+/* ── 2. HERO DASHBOARD — 3D FLOATING WINDOW ─────────────────── */
+.hero-dashboard {
+  transform: perspective(900px) rotateY(-6deg) rotateX(3deg) translateZ(20px);
+  transform-origin: left center;
+  transition: transform 0.8s var(--ease);
+  box-shadow:
+    0 40px 80px rgba(0,0,0,.6),
+    0 20px 40px rgba(0,229,200,.08),
+    0 0 0 1px rgba(0,229,200,.1),
+    inset 0 1px 0 rgba(255,255,255,.05);
+}
+.hero-dashboard:hover {
+  transform: perspective(900px) rotateY(-2deg) rotateX(1deg) translateZ(30px);
+}
+
+/* Floating alert card — 3D lift */
+.hero-float-alert {
+  transform: perspective(600px) translateZ(30px) rotateX(-2deg) rotateY(3deg);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.5),
+    0 0 0 1px rgba(251,146,60,.2),
+    0 8px 24px rgba(251,146,60,.12);
+  animation: floatCard3D 5s ease-in-out infinite !important;
+}
+
+@keyframes floatCard3D {
+  0%   { transform: perspective(600px) translateZ(30px) rotateX(-2deg) rotateY(3deg) translateY(0); }
+  33%  { transform: perspective(600px) translateZ(36px) rotateX(-4deg) rotateY(2deg) translateY(-8px); }
+  66%  { transform: perspective(600px) translateZ(28px) rotateX(0deg) rotateY(5deg) translateY(-4px); }
+  100% { transform: perspective(600px) translateZ(30px) rotateX(-2deg) rotateY(3deg) translateY(0); }
+}
+
+/* Node network connectors — 3D depth */
+.hero-nodes {
+  transform: perspective(1000px) translateZ(-20px) rotateX(5deg);
+  transform-style: preserve-3d;
+}
+.hero-node {
+  transform-style: preserve-3d;
+  box-shadow: 0 0 20px currentColor, 0 0 8px currentColor;
+}
+
+/* ── 3. STAT CARDS — 3D LIFT ON HOVER ───────────────────────── */
+.hero-stat {
+  position: relative;
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  transform: perspective(600px) translateZ(0px);
+  will-change: transform;
+  overflow: hidden;
+}
+.hero-stat::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at var(--shine-x, 50%) var(--shine-y, 50%),
+    rgba(0,229,200,.12) 0%,
+    transparent 60%
+  );
+  opacity: var(--shine-opacity, 0);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+.hero-stat:hover {
+  transform: perspective(600px) translateZ(12px) scale(1.04);
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.4),
+    0 0 0 1px rgba(0,229,200,.15),
+    0 0 30px rgba(0,229,200,.06);
+}
+
+/* ── 4. RISK CARDS — FULL TILT 3D ───────────────────────────── */
+.risk-card {
+  position: relative;
+  will-change: transform;
+  transition: transform var(--tilt-speed) var(--ease), box-shadow var(--tilt-speed) var(--ease);
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+/* Shine overlay that follows mouse */
+.risk-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse at var(--shine-x, 50%) var(--shine-y, 50%),
+    rgba(255,255,255,.07) 0%,
+    transparent 55%
+  );
+  opacity: var(--shine-opacity, 0);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* Front face glow stripe */
+.risk-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--risk-color, rgba(0,229,200,.4)), transparent);
+  opacity: .5;
+}
+
+.risk-card:hover {
+  box-shadow:
+    0 30px 70px rgba(0,0,0,.5),
+    0 0 0 1px rgba(255,255,255,.06),
+    0 0 60px color-mix(in srgb, var(--risk-color, #00e5c8) 15%, transparent);
+  z-index: 2;
+}
+
+/* stat value inside risk cards */
+.risk-card-stat strong {
+  display: inline-block;
+  transform: perspective(400px) translateZ(4px);
+  transition: transform 0.3s var(--ease);
+}
+.risk-card:hover .risk-card-stat strong {
+  transform: perspective(400px) translateZ(14px) scale(1.05);
+}
+
+/* ── 5. BENTO CARDS — 3D TILT + DEPTH ───────────────────────── */
+.bento-card {
+  position: relative;
+  will-change: transform;
+  transition: transform var(--tilt-speed) var(--ease), box-shadow var(--tilt-speed) var(--ease);
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+.bento-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse at var(--shine-x, 50%) var(--shine-y, 50%),
+    rgba(255,255,255,.06) 0%,
+    transparent 55%
+  );
+  opacity: var(--shine-opacity, 0);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.bento-card:hover {
+  box-shadow:
+    0 28px 60px rgba(0,0,0,.5),
+    0 0 0 1px rgba(255,255,255,.07),
+    0 0 50px color-mix(in srgb, var(--accent-color, #00e5c8) 12%, transparent);
+  z-index: 2;
+}
+
+/* icon floats forward on 3D tilt */
+.bento-icon-wrap {
+  transform: perspective(400px) translateZ(0);
+  transition: transform 0.4s var(--ease);
+  display: inline-flex;
+}
+.bento-card:hover .bento-icon-wrap {
+  transform: perspective(400px) translateZ(20px) scale(1.15);
+}
+
+/* title lifts slightly */
+.bento-card-title {
+  transform: perspective(400px) translateZ(0);
+  transition: transform 0.4s var(--ease) 0.05s;
+}
+.bento-card:hover .bento-card-title {
+  transform: perspective(400px) translateZ(10px);
+}
+
+/* ── 6. STEPS FLOW — 3D PERSPECTIVE STAGE ───────────────────── */
+.steps-flow {
+  perspective: 1400px;
+  perspective-origin: 50% 30%;
+}
+
+.step-item {
+  position: relative;
+  transform: perspective(600px) translateZ(0) rotateX(0deg);
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  will-change: transform;
+}
+.step-item:hover {
+  transform: perspective(600px) translateZ(20px) rotateX(-4deg);
+  box-shadow:
+    0 24px 50px rgba(0,0,0,.45),
+    0 0 0 1px rgba(0,229,200,.1);
+  z-index: 2;
+}
+
+/* step number pops forward */
+.step-num {
+  transform: perspective(300px) translateZ(0);
+  transition: transform 0.4s var(--ease);
+  display: inline-block;
+}
+.step-item:hover .step-num {
+  transform: perspective(300px) translateZ(16px) scale(1.1);
+}
+
+/* step icon spins in 3D on hover */
+.step-icon {
+  display: inline-block;
+  transition: transform 0.6s var(--ease);
+}
+.step-item:hover .step-icon {
+  transform: rotateY(360deg) scale(1.2);
+}
+
+/* callout boxes lift */
+.steps-callout {
+  position: relative;
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  transform: perspective(800px) translateZ(0);
+}
+.steps-callout:hover {
+  transform: perspective(800px) translateZ(16px) rotateX(-2deg);
+  box-shadow: 0 20px 50px rgba(0,0,0,.4);
+}
+
+/* ── 7. PROB-URGENCY — 3D BANNER ────────────────────────────── */
+.prob-urgency {
+  position: relative;
+  transform: perspective(1000px) rotateX(-1deg) translateZ(0);
+  transition: transform 0.6s var(--ease), box-shadow 0.6s var(--ease);
+}
+.prob-urgency:hover {
+  transform: perspective(1000px) rotateX(0deg) translateZ(12px);
+  box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 40px rgba(245,158,11,.06);
+}
+
+/* stat value pops */
+.prob-urgency-stat {
+  transform: perspective(300px) translateZ(0);
+  transition: transform 0.4s var(--ease);
+}
+.prob-urgency:hover .prob-urgency-stat {
+  transform: perspective(300px) translateZ(20px) scale(1.05);
+}
+
+/* gap blind-spot badge spins */
+.prob-gap-missing-badge {
+  animation: badge3DSpin 8s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+@keyframes badge3DSpin {
+  0%   { transform: perspective(200px) rotateY(0deg) rotateX(0deg); }
+  25%  { transform: perspective(200px) rotateY(8deg) rotateX(-4deg); }
+  50%  { transform: perspective(200px) rotateY(-8deg) rotateX(4deg); }
+  75%  { transform: perspective(200px) rotateY(4deg) rotateX(-2deg); }
+  100% { transform: perspective(200px) rotateY(0deg) rotateX(0deg); }
+}
+
+/* ── 8. SECTION REVEALS — 3D ENTRANCE ──────────────────────── */
+/* Generic 3D reveal — applied alongside existing opacity/translateY reveals */
+[data-3d-reveal] {
+  opacity: 0;
+  transform: perspective(800px) rotateX(8deg) translateY(32px) translateZ(-20px);
+  transition:
+    opacity 0.7s var(--ease),
+    transform 0.7s var(--ease);
+}
+[data-3d-reveal].revealed {
+  opacity: 1;
+  transform: perspective(800px) rotateX(0deg) translateY(0) translateZ(0);
+}
+
+/* ── 9. SECTION LABELS — 3D FLOAT ──────────────────────────── */
+.section-label {
+  transform: perspective(400px) translateZ(4px);
+  transition: transform 0.4s var(--ease);
+}
+
+/* ── 10. NAVBAR — DEPTH SHADOW ON SCROLL ───────────────────── */
+.navbar.scrolled {
+  transform: perspective(1200px) translateZ(0);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,.6),
+    0 2px 0 rgba(0,229,200,.06),
+    0 0 60px rgba(0,0,0,.3);
+}
+
+/* ── 11. LAUNCH TIMELINE — 3D CARDS ────────────────────────── */
+.launch-card,
+.timeline-card {
+  position: relative;
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  transform: perspective(700px) translateZ(0) rotateY(0deg);
+  will-change: transform;
+  overflow: hidden;
+}
+.launch-card::after,
+.timeline-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse at var(--shine-x, 50%) var(--shine-y, 50%),
+    rgba(255,255,255,.05) 0%,
+    transparent 60%
+  );
+  opacity: var(--shine-opacity, 0);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.launch-card:hover,
+.timeline-card:hover {
+  transform: perspective(700px) translateZ(18px) rotateY(-2deg) rotateX(-1deg);
+  box-shadow:
+    0 24px 60px rgba(0,0,0,.5),
+    0 0 0 1px rgba(0,229,200,.1);
+  z-index: 2;
+}
+
+/* ── 12. TESTIMONIAL CARDS — 3D DEPTH ──────────────────────── */
+.testimonial-card,
+.testi-card {
+  position: relative;
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  transform: perspective(800px) translateZ(0);
+  will-change: transform;
+  overflow: hidden;
+}
+.testimonial-card::after,
+.testi-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse at var(--shine-x, 50%) var(--shine-y, 50%),
+    rgba(255,255,255,.05) 0%,
+    transparent 55%
+  );
+  opacity: var(--shine-opacity, 0);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.testimonial-card:hover,
+.testi-card:hover {
+  transform: perspective(800px) translateZ(14px) rotateX(-2deg);
+  box-shadow: 0 20px 50px rgba(0,0,0,.5);
+}
+
+/* ── 13. PRICING CARDS — 3D FEATURED ELEVATION ─────────────── */
+.pricing-card,
+.price-card {
+  position: relative;
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  transform: perspective(900px) translateZ(0);
+  will-change: transform;
+}
+.pricing-card:hover,
+.price-card:hover {
+  transform: perspective(900px) translateZ(22px) rotateX(-3deg) rotateY(-1deg);
+  box-shadow:
+    0 32px 80px rgba(0,0,0,.55),
+    0 0 0 1px rgba(0,229,200,.15),
+    0 0 60px rgba(0,229,200,.06);
+}
+/* featured card already elevated — give it extra 3D */
+.pricing-card--featured,
+.price-card--featured,
+.pricing-card[data-featured="true"] {
+  transform: perspective(900px) translateZ(12px) scale(1.02);
+}
+.pricing-card--featured:hover,
+.price-card--featured:hover {
+  transform: perspective(900px) translateZ(28px) rotateX(-3deg) scale(1.04);
+}
+
+/* ── 14. FOOTER — 3D TRUST BADGES ──────────────────────────── */
+.footer-badge,
+.trust-badge {
+  transition: transform 0.4s var(--ease);
+  transform: perspective(400px) translateZ(0);
+}
+.footer-badge:hover,
+.trust-badge:hover {
+  transform: perspective(400px) translateZ(10px) rotateY(6deg);
+}
+
+/* ── 15. BTN 3D DEPTH ───────────────────────────────────────── */
+.btn {
+  position: relative;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s ease;
+}
+.btn:hover {
+  transform: translateY(-2px) translateZ(4px);
+}
+.btn:active {
+  transform: translateY(0px) translateZ(0px);
+}
+.btn-primary:hover {
+  box-shadow:
+    0 8px 32px rgba(0,229,200,.35),
+    0 4px 16px rgba(0,0,0,.3),
+    inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+/* ── 16. ANIMATED 3D GRID BACKGROUND ───────────────────────── */
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(0,229,200,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,200,.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: perspective(600px) rotateX(12deg) translateY(-10%);
+  transform-origin: top center;
+  animation: gridPerspective 20s ease-in-out infinite;
+}
+@keyframes gridPerspective {
+  0%   { transform: perspective(600px) rotateX(12deg) translateY(-10%) translateZ(0); }
+  50%  { transform: perspective(600px) rotateX(14deg) translateY(-12%) translateZ(-30px); }
+  100% { transform: perspective(600px) rotateX(12deg) translateY(-10%) translateZ(0); }
+}
+
+/* ── 17. MARQUEE TRACK — 3D DEPTH ───────────────────────────── */
+.marquee-wrap {
+  perspective: 1000px;
+  overflow: hidden;
+}
+.marquee-track {
+  transform: perspective(800px) rotateX(2deg);
+}
+
+/* ── 18. CONTACT MODAL — 3D ENTRANCE ───────────────────────── */
+.modal,
+.contact-modal,
+[class*="modal"] > [class*="modal-content"] {
+  animation: modal3DIn 0.45s var(--ease) forwards;
+}
+@keyframes modal3DIn {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) rotateX(-8deg) translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1000px) rotateX(0deg) translateY(0) scale(1);
+  }
+}
+
+/* ── 19. SECTION WRAPPER DEPTH ──────────────────────────────── */
+.prob-section,
+.features-section,
+#products,
+#launches,
+#testimonials {
+  perspective: 2000px;
+  perspective-origin: 50% 0%;
+}
+
+/* ── 20. GLOBAL SCROLL-RESPONSIVE 3D DEPTH ─────────────────── */
+/* Applied via JS IntersectionObserver — cards animate in with depth */
+.reveal-3d {
+  opacity: 0;
+  transform: perspective(700px) rotateX(6deg) translateY(30px) translateZ(-15px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+.reveal-3d.is-visible {
+  opacity: 1;
+  transform: perspective(700px) rotateX(0deg) translateY(0) translateZ(0);
+}

@@ -1,4 +1,5 @@
 import { useReveal } from '../../hooks';
+import { useCardTilt } from '../../hooks/useCardTilt';
 
 const RISK_CATEGORIES = [
   {
@@ -55,14 +56,26 @@ const RISK_CATEGORIES = [
 
 const RiskCard = ({ risk, index }) => {
   const [ref, isVisible] = useReveal();
+  const { ref: tiltRef, onMouseMove, onMouseLeave } = useCardTilt(10, 14);
+
+  /* merge both refs */
+  const setRefs = (el) => {
+    ref.current = el;
+    tiltRef.current = el;
+  };
+
   return (
     <div
-      ref={ref}
+      ref={setRefs}
       className="risk-card"
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : 'translateY(28px)',
-        transition: `all .55s var(--ease) ${index * 0.08}s`,
+        transform: isVisible
+          ? 'perspective(900px) rotateY(0deg) rotateX(0deg) translateZ(0px) scale(1)'
+          : 'perspective(900px) rotateX(6deg) translateY(28px) translateZ(-15px)',
+        transition: `opacity .55s var(--ease) ${index * 0.08}s, transform .55s var(--ease) ${index * 0.08}s`,
         '--risk-color': risk.color,
       }}
     >
